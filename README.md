@@ -38,10 +38,15 @@
 ## 项目结构
 AIGobang
 │
+
 ├── HttpServer # C++ HTTP服务器框架
+
 ├── WebApps # 五子棋 Web 应用
+
 ├── images # 项目截图
+
 ├── CMakeLists.txt
+
 └── README.md
 
 
