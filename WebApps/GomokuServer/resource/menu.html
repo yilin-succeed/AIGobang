@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五子棋</title>
+
+<style>
+
+/* 全局 */
+body{
+    margin:0;
+    padding:0;
+    font-family:"Microsoft YaHei",Arial;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    overflow:hidden;
+}
+
+/* 加载界面 */
+#loading-container{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+/* 标题 */
+#loading-title{
+    font-size:3em;
+    margin-bottom:30px;
+    color:#00c3ff;
+    text-shadow:
+        0 0 5px #00c3ff,
+        0 0 10px #00c3ff,
+        0 0 20px #008bff;
+}
+
+/* 进度条 */
+.progress-bar{
+    width:320px;
+    height:18px;
+    background:#2a2a3c;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+
+.progress-bar-inner{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#00c3ff,#00e1ff,#00c3ff);
+    transition:width 1.5s ease;
+    box-shadow:0 0 10px #00e1ff;
+}
+
+/* 加载文字 */
+#loading-text{
+    margin-top:15px;
+    color:#ccc;
+}
+
+/* 菜单 */
+#menu-container{
+    display:none;
+    text-align:center;
+    padding-top:120px;
+    animation:fadeIn .6s ease;
+}
+
+/* 菜单标题 */
+h1{
+    font-size:3em;
+    margin-bottom:30px;
+    color:#00c3ff;
+    text-shadow:
+        0 0 5px #00c3ff,
+        0 0 10px #00c3ff,
+        0 0 20px #008bff;
+}
+
+/* 分隔线 */
+.menu-border{
+    width:260px;
+    height:2px;
+    margin:20px auto;
+    background:#00c3ff;
+    box-shadow:0 0 10px #00c3ff;
+}
+
+/* 菜单按钮 */
+.menu-option{
+    margin:18px auto;
+    width:240px;
+    padding:14px 0;
+    font-size:1.3em;
+    border-radius:10px;
+    border:1px solid #00c3ff;
+    cursor:pointer;
+    transition:all .25s ease;
+    background:rgba(0,195,255,0.08);
+}
+
+.menu-option:hover{
+    background:#00c3ff;
+    color:#1e1e2f;
+    transform:scale(1.05);
+    box-shadow:
+        0 0 10px #00c3ff,
+        0 0 20px #00c3ff;
+}
+
+/* 动画 */
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 加载动画 -->
+<div id="loading-container">
+
+<div id="loading-title">五子棋</div>
+
+<div class="progress-bar">
+<div class="progress-bar-inner"></div>
+</div>
+
+<div id="loading-text">加载中...</div>
+
+</div>
+
+
+<!-- 菜单 -->
+<div id="menu-container">
+
+<h1>欢迎来到五子棋</h1>
+
+<div class="menu-border"></div>
+
+<div class="menu-option" id="play-ai">对战AI</div>
+
+<div class="menu-option">在线匹配</div>
+
+<div class="menu-option" onclick="exitGame()">退出游戏</div>
+
+</div>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded',function(){
+
+const progressBar=document.querySelector('.progress-bar-inner')
+const loadingContainer=document.getElementById('loading-container')
+const menuContainer=document.getElementById('menu-container')
+
+void progressBar.offsetWidth
+
+progressBar.style.width='100%'
+
+progressBar.addEventListener('transitionend',function(){
+
+loadingContainer.style.display='none'
+menuContainer.style.display='block'
+
+})
+
+setTimeout(()=>{
+
+if(loadingContainer.style.display!=='none'){
+loadingContainer.style.display='none'
+menuContainer.style.display='block'
+}
+
+},2000)
+
+})
+
+/* AI对战 */
+
+function startAiGame(){
+
+const userId=sessionStorage.getItem('userId')
+
+fetch('/aiBot/start',{
+method:'GET',
+headers:{'Accept':'text/html'}
+})
+
+.then(response=>response.text())
+
+.then(html=>{
+
+document.open()
+document.write(html)
+document.close()
+
+if(document.readyState==='loading'){
+
+document.addEventListener('DOMContentLoaded',function(){
+
+if(typeof initializeGame==='function'){
+initializeGame()
+}
+
+})
+
+}else{
+
+if(typeof initializeGame==='function'){
+initializeGame()
+}
+
+}
+
+})
+
+.catch(error=>{
+console.error('Error:',error)
+alert('启动AI对战失败')
+})
+
+}
+
+/* 绑定AI按钮 */
+
+document.getElementById('play-ai').addEventListener('click',startAiGame)
+
+
+/* 退出 */
+
+function exitGame(){
+
+sessionStorage.clear()
+window.location.href='/entry'
+
+}
+
+
+/* 页面关闭处理 */
+
+window.addEventListener('beforeunload',function(){
+
+const userId=sessionStorage.getItem('userId')
+
+if(userId){
+
+try{
+
+const data=new Blob([JSON.stringify({
+
+userId:userId,
+type:'refresh',
+gameType:0
+
+})],{type:'application/json'})
+
+navigator.sendBeacon('/user/logout',data)
+
+}catch(error){
+
+console.error(error)
+
+}
+
+}
+
+})
+
+
+/* 页面加载检查 */
+
+window.addEventListener('load',function(){
+
+const userId=sessionStorage.getItem('userId')
+
+if(!userId){
+window.location.href='/entry'
+}
+
+})
+
+</script>
+
+</body>
+</html>

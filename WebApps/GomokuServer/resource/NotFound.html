@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>404 - 页面不存在</title>
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    font-family:"Microsoft YaHei",Arial;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+/* 404标题 */
+h1{
+    font-size:80px;
+    margin:0;
+    color:#00c3ff;
+    text-shadow:
+        0 0 10px #00c3ff,
+        0 0 20px #008bff,
+        0 0 40px #008bff;
+}
+
+/* 副标题 */
+h2{
+    margin-top:10px;
+    font-weight:normal;
+    color:#ccc;
+}
+
+/* 按钮 */
+button{
+    margin-top:40px;
+    padding:12px 30px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+    cursor:pointer;
+    transition:.25s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #00c3ff;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>404</h1>
+
+<h2>页面不存在</h2>
+
+<button onclick="goHome()">返回首页</button>
+
+<script>
+
+function goHome(){
+window.location.href="/entry"
+}
+
+</script>
+
+</body>
+
+</html>

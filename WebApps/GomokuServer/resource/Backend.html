@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>五子棋游戏后台</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+    background:linear-gradient(135deg,#eef2f7,#f8fafc);
+}
+
+/* 页面容器 */
+.wrapper{
+    max-width:900px;
+    margin:60px auto;
+    padding:20px;
+}
+
+/* 标题 */
+h1{
+    text-align:center;
+    margin-bottom:40px;
+    font-weight:600;
+    color:#222;
+}
+
+/* 卡片网格 */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+/* 单个统计卡片 */
+.card{
+    background:white;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    transition:0.2s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 15px 30px rgba(0,0,0,0.08);
+}
+
+/* 标题 */
+.label{
+    color:#666;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+/* 数字 */
+.value{
+    font-size:36px;
+    font-weight:700;
+    color:#111;
+}
+
+/* loading动画 */
+.loading{
+    color:#888;
+    font-size:18px;
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%{opacity:0.4}
+    50%{opacity:1}
+    100%{opacity:0.4}
+}
+
+/* 错误 */
+.error{
+    color:#ff4d4f;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<h1>🎮 五子棋游戏后台统计</h1>
+
+<div class="stats">
+
+<div class="card">
+<div class="label">当前在线人数</div>
+<div id="curOnline" class="value loading">loading...</div>
+</div>
+
+<div class="card">
+<div class="label">历史最高在线</div>
+<div id="maxOnline" class="value loading">loading...</div>
+</div>
+
+<div class="card">
+<div class="label">注册用户总数</div>
+<div id="totalUser" class="value loading">loading...</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function updateStats(){
+
+fetch('/backend_data',{
+method:'GET',
+headers:{
+'Accept':'application/json',
+'Content-Type':'application/json'
+},
+credentials:'same-origin'
+})
+.then(res=>{
+if(!res.ok){
+throw new Error(res.status)
+}
+return res.json()
+})
+.then(data=>{
+document.getElementById('curOnline').textContent=data.curOnline
+document.getElementById('maxOnline').textContent=data.maxOnline
+document.getElementById('totalUser').textContent=data.totalUser
+})
+.catch(err=>{
+['curOnline','maxOnline','totalUser'].forEach(id=>{
+document.getElementById(id).textContent="加载失败"
+document.getElementById(id).classList.add("error")
+})
+})
+
+}
+
+window.addEventListener('load',updateStats)
+
+setInterval(updateStats,30000)
+
+</script>
+
+</body>
+</html>
